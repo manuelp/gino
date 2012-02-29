@@ -7,14 +7,16 @@
 ;; - dirs have to exist
 ;; - play should be in the PATH
 
+;; Editable configuration
 (def app-name "timesheet")
 (def workspace-dir "~/workspace")
-(def app-dir (str workspace-dir "/" app-name))
-(def dest (str "~/deploy/" app-name))
+(def dest-dir "~/deploy")
 (def tomcat-dir "/usr/share/tomcat6")
 
-(defn create-war-cmd [workspace-dir app-name version dest]
-  (str "play war " app-name " --%prod -o " dest "-" version))
+;; Derivated (do not edit!)
+(def separator (. File separator))
+(def app-dir (str workspace-dir separator app-name))
+(def dest (str dest-dir separator app-name))
 
 ;; ---
 
@@ -31,3 +33,7 @@
 
 (defn remove-dir [directory]
   (. FileUtils deleteDirectory (File. directory)))
+
+;; TODO Read version from file
+(defn create-war [version]
+  (execute-cmd (build-cmd "play" ["war" app-name "--%prod" "-o" (str dest "-" version)])))
