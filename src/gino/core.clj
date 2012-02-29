@@ -1,6 +1,7 @@
 (ns gino.core
   (:import [org.apache.commons.io FileUtils]
-           [java.io File]))
+           [java.io File]
+           [org.apache.commons.exec CommandLine DefaultExecutor]))
 
 ;; Requirements:
 ;; - dirs have to exist
@@ -16,5 +17,9 @@
   (str "play war " app-name " --%prod -o " dest "-" version))
 
 ;; ---
+
+(defn execute-cmd [cmd]
+  (. (new DefaultExecutor) execute (. CommandLine parse cmd)))
+
 (defn remove-dir [directory]
   (. FileUtils deleteDirectory (File. directory)))
