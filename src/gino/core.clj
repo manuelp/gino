@@ -9,9 +9,10 @@
 
 ;; Editable configuration
 (def app-name "timesheet")
-(def workspace-dir "~/workspace")
-(def dest-dir "~/deploy")
+(def workspace-dir "/home/manuel/workspace")
+(def dest-dir "/home/manuel/deploy")
 (def tomcat-dir "/usr/share/tomcat6")
+(def play "/home/manuel/bin/play")
 
 ;; Derivated (do not edit!)
 (def separator (. File separator))
@@ -33,12 +34,10 @@
 
 ;; TODO Read version from file
 (defn create-war [version]
-  (execute-cmd (build-cmd "play" ["war" app-name "--%prod" "-o" (str dest "-" version)])))
+  (execute-cmd (build-cmd play ["war" app-dir "--%prod" "-o" (str dest "-" version)])))
 
 (defn remove-dir [directory]
   (. FileUtils deleteDirectory (File. directory)))
-
-;; TODO test create-war
 
 ;; ----------
 
