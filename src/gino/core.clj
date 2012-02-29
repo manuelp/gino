@@ -31,9 +31,23 @@
 (defn execute-cmd [cmdline]
   (. (new DefaultExecutor) execute cmdline))
 
-(defn remove-dir [directory]
-  (. FileUtils deleteDirectory (File. directory)))
-
 ;; TODO Read version from file
 (defn create-war [version]
   (execute-cmd (build-cmd "play" ["war" app-name "--%prod" "-o" (str dest "-" version)])))
+
+(defn remove-dir [directory]
+  (. FileUtils deleteDirectory (File. directory)))
+
+;; TODO test create-war
+
+;; ----------
+
+;; TODO implement the "recipe" in another ns
+;; TODO move configuration in a dedicated ns
+
+;; TODO Test with unprivileged user on Linux
+(defn remove-tomcat-app []
+  (let [webapps-dir (str tomcat-dir separator "webapps")]
+    (do
+     (remove-dir (str webapps-dir separator app-name))
+     (. (new File (str webapps-dir separator app-name ".war")) delete))))
