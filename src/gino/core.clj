@@ -18,8 +18,16 @@
 
 ;; ---
 
-(defn execute-cmd [cmd]
-  (. (new DefaultExecutor) execute (. CommandLine parse cmd)))
+(defn build-cmd [cmd args]
+  (loop [cmdline (new CommandLine cmd)
+         args args]
+    (if (empty? args)
+      cmdline
+      (recur (. cmdline addArgument (first args))
+             (rest args)))))
+
+(defn execute-cmd [cmdline]
+  (. (new DefaultExecutor) execute cmdline))
 
 (defn remove-dir [directory]
   (. FileUtils deleteDirectory (File. directory)))
