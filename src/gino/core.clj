@@ -8,9 +8,10 @@
 ;; - play should be in the PATH
 
 ;; Editable configuration
+;; NB: paths have to be absolute!
 (def app-name "timesheet")
 (def workspace-dir "/home/manuel/workspace")
-(def dest-dir "/home/manuel/deploy")
+(def dest-dir "/home/manuel/deploy/timesheet")
 (def tomcat-dir "/usr/share/tomcat6")
 (def play "/home/manuel/bin/play")
 
@@ -34,7 +35,7 @@
 
 ;; TODO Read version from file
 (defn create-war [version]
-  (execute-cmd (build-cmd play ["war" app-dir "--%prod" "-o" (str dest "-" version)])))
+  (execute-cmd (build-cmd play ["war" app-dir "--%prod" "-o" (str dest "-" version) "--zip"])))
 
 (defn remove-dir [directory]
   (. FileUtils deleteDirectory (File. directory)))
