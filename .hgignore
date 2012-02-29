@@ -1,1 +1,5 @@
 syntax: glob
+lib
+.lein-deps-sum
+\#*
+.\#*
