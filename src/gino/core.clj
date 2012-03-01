@@ -19,6 +19,7 @@
 (def separator (. File separator))
 (def app-dir (str workspace-dir separator app-name))
 (def dest (str dest-dir separator app-name))
+(def webapps-dir (str tomcat-dir separator "webapps"))
 
 ;; ---
 
@@ -36,6 +37,17 @@
 (defn remove-dir [directory]
   (. FileUtils deleteDirectory (File. directory)))
 
+(defn copy-file [file to-dir]
+  (. FileUtils copyFileToDirectory (File. file) (File. to-dir)))
+
+(defn copy-file-to-file [file to-file]
+  (. FileUtils copyFile (File. file) (File. to-file)))
+
+;; ----------
+
+;; TODO implement the "recipe" in another ns
+;; TODO move configuration in a dedicated ns
+
 ;; TODO Read version from file
 (defn create-war [version]
   (let [out-dir (str dest "-" version)]
@@ -43,14 +55,10 @@
      (execute-cmd (build-cmd play ["war" app-dir "--%prod" "-o" out-dir "--zip"]))
      (remove-dir out-dir))))
 
-;; ----------
-
-;; TODO implement the "recipe" in another ns
-;; TODO move configuration in a dedicated ns
-
-;; TODO Test with unprivileged user on Linux
 (defn remove-tomcat-app []
-  (let [webapps-dir (str tomcat-dir separator "webapps")]
-    (do
-     (remove-dir (str webapps-dir separator app-name))
-     (. (new File (str webapps-dir separator app-name ".war")) delete))))
+  (do
+    (remove-dir (str webapps-dir separator app-name))
+    (. (new File (str webapps-dir separator app-name ".war")) delete)))
+
+(defn deploy-local [version]
+  (copy-file-to-file (str dest "-" version ".war") (str webapps-dir separator app-name ".war")))
