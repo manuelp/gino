@@ -1,4 +1,5 @@
 (ns gino.core
+  (:require [clojure.string :as cs])
   (:import [org.apache.commons.io FileUtils]
            [java.io File]
            [org.apache.commons.exec CommandLine DefaultExecutor]))
@@ -52,10 +53,13 @@
 ;; TODO Documentation (@wiki)
 ;; TODO implement "recipes" in another ns
 ;; TODO move configuration in a dedicated ns
+;; TODO Logging needs some love, too
 
-;; TODO Read version from file
-(defn create-war [version]
-  (let [out-dir (str dest "-" version)]
+(defn read-version []
+  (cs/trim-newline (slurp (str app-dir separator "version.txt"))))
+
+(defn create-war []
+  (let [out-dir (str dest "-" (read-version))]
     (do
      (execute-cmd (build-cmd play ["war" app-dir "--%prod" "-o" out-dir "--zip"]))
      (remove-dir out-dir))))
@@ -65,13 +69,13 @@
     (remove-dir (str webapps-dir separator app-name))
     (. (new File (str webapps-dir separator app-name ".war")) delete)))
 
-(defn deploy-local [version]
-  (copy-file-to-file (str dest "-" version ".war") (str webapps-dir separator app-name ".war")))
+(defn deploy-local []
+  (copy-file-to-file (str dest "-" (read-version) ".war") (str webapps-dir separator app-name ".war")))
 
 ;; ----------
 ;; Recipes:
-(defn local-deploy [version]
+(defn local-deploy []
   (do
-    (create-war version)
+    (create-war)
     (remove-tomcat-app)
-    (deploy-local version)))
+    (deploy-local)))
