@@ -43,9 +43,14 @@
 (defn copy-file-to-file [file to-file]
   (. FileUtils copyFile (File. file) (File. to-file)))
 
+(defn remote-copy [file dest to-dir]
+  (letfn [(build-dest [] (str "root@" dest ":" to-dir))]
+    (execute-cmd (build-cmd "scp" [file (build-dest)]))))
+
 ;; ----------
 
-;; TODO implement the "recipe" in another ns
+;; TODO Documentation (@wiki)
+;; TODO implement "recipes" in another ns
 ;; TODO move configuration in a dedicated ns
 
 ;; TODO Read version from file
@@ -62,3 +67,11 @@
 
 (defn deploy-local [version]
   (copy-file-to-file (str dest "-" version ".war") (str webapps-dir separator app-name ".war")))
+
+;; ----------
+;; Recipes:
+(defn local-deploy [version]
+  (do
+    (create-war version)
+    (remove-tomcat-app)
+    (deploy-local version)))
