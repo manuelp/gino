@@ -12,8 +12,8 @@
 (def app-name "timesheet")
 (def workspace-dir "/home/manuel/workspace")
 (def dest-dir "/home/manuel/deploy/timesheet")
-(def tomcat-dir "/usr/share/tomcat6")
-(def play "/home/manuel/bin/play")
+(def tomcat-dir "/opt/apache-tomcat-5.5.23")
+(def play "/home/manuel/software/Play/play")
 
 ;; Derivated (do not edit!)
 (def separator (. File separator))
@@ -33,12 +33,15 @@
 (defn execute-cmd [cmdline]
   (. (new DefaultExecutor) execute cmdline))
 
-;; TODO Read version from file
-(defn create-war [version]
-  (execute-cmd (build-cmd play ["war" app-dir "--%prod" "-o" (str dest "-" version) "--zip"])))
-
 (defn remove-dir [directory]
   (. FileUtils deleteDirectory (File. directory)))
+
+;; TODO Read version from file
+(defn create-war [version]
+  (let [out-dir (str dest "-" version)]
+    (do
+     (execute-cmd (build-cmd play ["war" app-dir "--%prod" "-o" out-dir "--zip"]))
+     (remove-dir out-dir))))
 
 ;; ----------
 
