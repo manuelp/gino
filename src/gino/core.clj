@@ -2,7 +2,10 @@
   (:require [clojure.string :as cs])
   (:import [org.apache.commons.io FileUtils]
            [java.io File]
-           [org.apache.commons.exec CommandLine DefaultExecutor]))
+           [org.apache.commons.exec CommandLine DefaultExecutor]
+           [net.schmizz.sshj SSHClient]
+           [net.schmizz.sshj.xfer FileSystemFile]
+           [net.schmizz.sshj.xfer.scp SCPFileTransfer]))
 
 ;; Requirements:
 ;; - dirs have to exist
@@ -38,15 +41,24 @@
 (defn remove-dir [directory]
   (. FileUtils deleteDirectory (File. directory)))
 
-(defn copy-file [file to-dir]
+(defn copy-to-dir [file to-dir]
   (. FileUtils copyFileToDirectory (File. file) (File. to-dir)))
 
-(defn copy-file-to-file [file to-file]
+(defn copy-to-file [file to-file]
   (. FileUtils copyFile (File. file) (File. to-file)))
 
-(defn remote-copy [file dest to-dir]
-  (letfn [(build-dest [] (str "root@" dest ":" to-dir))]
-    (execute-cmd (build-cmd "scp" [file (build-dest)]))))
+
+;; (defn remote-copy [file dest to-dir]
+;;   (letfn [(build-dest [] (str "root@" dest ":" to-dir))]
+;;     (execute-cmd (build-cmd "scp" [file (build-dest)]))))
+
+(defn remote-copy [file host username password dest]
+  (let [ssh (new SSHClient)]
+    (do (. ssh loadKnownHosts)
+        (. ssh connect host)
+        (. ssh authPassword username password)
+        (. ssh useCompression)
+        (. (. ssh newSCPFileTransfer) (new FileSystemFile file) dest))))
 
 ;; ----------
 
@@ -70,7 +82,7 @@
     (. (new File (str webapps-dir separator app-name ".war")) delete)))
 
 (defn deploy-local []
-  (copy-file-to-file (str dest "-" (read-version) ".war") (str webapps-dir separator app-name ".war")))
+  (copy-to-file (str dest "-" (read-version) ".war") (str webapps-dir separator app-name ".war")))
 
 ;; ----------
 ;; Recipes:
