@@ -48,17 +48,13 @@
   (. FileUtils copyFile (File. file) (File. to-file)))
 
 
-;; (defn remote-copy [file dest to-dir]
-;;   (letfn [(build-dest [] (str "root@" dest ":" to-dir))]
-;;     (execute-cmd (build-cmd "scp" [file (build-dest)]))))
-
 (defn remote-copy [file host username password dest]
   (let [ssh (new SSHClient)]
     (do (. ssh loadKnownHosts)
         (. ssh connect host)
         (. ssh authPassword username password)
         (. ssh useCompression)
-        (. (. ssh newSCPFileTransfer) (new FileSystemFile file) dest))))
+        (. (. ssh newSCPFileTransfer) upload (new FileSystemFile file) dest))))
 
 ;; ----------
 
@@ -91,3 +87,8 @@
     (create-war)
     (remove-tomcat-app)
     (deploy-local)))
+
+(defn remote-deploy [host username password]
+  (do
+    (create-war)
+    (remote-copy (str dest "-" (read-version) ".war") host username password "/root/TS")))
