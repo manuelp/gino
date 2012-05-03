@@ -1,6 +1,6 @@
-(defproject gino "0.1.0"
+(defproject gino "0.1.1-dev"
   :description "Compile and deploy Play! projects on remove *nix hosts via SSH."
-  :dependencies [[org.clojure/clojure "1.3.0"]
+  :dependencies [[org.clojure/clojure "1.4.0"]
                  [org.apache.directory.studio/org.apache.commons.io "2.1"]
                  [org.apache.commons/commons-exec "1.1"]
                  [net.schmizz/sshj "0.7.0"]
