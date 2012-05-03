@@ -5,6 +5,15 @@ This is a small tool to produce WARs and deploy them through SSH to *nix hosts f
 
 FIXME: write
 
+## Documentation ##
+If you want to generate docs with [Marginalia](https://github.com/fogus/marginalia), just run:
+
+```
+lein2 marg
+```
+
+And look into the `docs` subdir.
+
 ## License ##
 
 Copyright (C) 2012 Manuel Paccagnella
