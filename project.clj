@@ -7,4 +7,5 @@
                  [net.schmizz/sshj "0.7.0"]
                  [org.slf4j/slf4j-simple "1.6.4"]
                  [com.jcraft/jzlib "1.1.1"]]
+  :plugins [[lein-marginalia "0.7.0"]]
   :description "Compile and deploy Play! projects on remove *nix hosts via SSH.")
